@@ -16,7 +16,7 @@ async function loadCommands(): Promise<Command[]> {
     return (
         await Promise.all(
             (await fs.readdir(path.join(__dirname, "commands"), { recursive: true }))
-                .filter((fileName) => fileName !== "index.ts" && fileName.endsWith(".ts"))
+                .filter((fileName) => fileName !== "index.ts" && !fileName.includes("sub") && fileName.endsWith(".ts"))
                 .map((commandFile) => import(path.join(__dirname, "commands", commandFile)))
         )
     ).map((imported) => imported.command);

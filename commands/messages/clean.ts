@@ -2,8 +2,8 @@ import { SlashCommandBuilder } from "discord.js";
 import { Command } from "..";
 
 export const command: Command = {
-    data: new SlashCommandBuilder().setName("kick").setDescription("멤버 추방"),
+    data: new SlashCommandBuilder().setName("clean").setDescription("메시지 삭제"),
     async execute(interaction) {
-        // TODO: Kick user ('user' user option)
+        // TODO: Remove messages ('remove_count' integer option)
     }
 };
