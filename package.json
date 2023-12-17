@@ -1,0 +1,27 @@
+{
+    "dependencies": {
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.3.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "name": "utilo",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node build/index.js",
+        "build": "npx tsc -p .",
+        "dev": "nodemon index.ts"
+    },
+    "keywords": [
+        "discord",
+        "bot"
+    ],
+    "author": "ohbeomho <ohbeomho0322@gmail.com> (https://ohbeomho.netlify.app/)",
+    "license": "MIT",
+    "description": "A simple discord bot"
+}
