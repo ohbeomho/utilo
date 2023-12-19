@@ -2,7 +2,6 @@ import "dotenv/config";
 import { Client, Collection, Events, GatewayIntentBits, REST, Routes } from "discord.js";
 import { Command } from "./commands";
 import fs from "fs/promises";
-import path from "path";
 
 const BOT_TOKEN = process.env.BOT_TOKEN,
     APP_ID = process.env.APP_ID;
@@ -15,11 +14,15 @@ if (!BOT_TOKEN || !APP_ID) {
 async function loadCommands(): Promise<Command[]> {
     return (
         await Promise.all(
-            (await fs.readdir(path.join(__dirname, "commands"), { recursive: true }))
-                .filter((fileName) => fileName !== "index.ts" && !fileName.includes("sub") && fileName.endsWith(".ts"))
-                .map((commandFile) => import(path.join(__dirname, "commands", commandFile)))
+            (await fs.readdir("./commands", { recursive: true, withFileTypes: true }))
+                .filter(
+                    (dirent) => dirent.isFile() && !dirent.name.startsWith("index") && !dirent.name.endsWith(".json")
+                )
+                .map((commandFile) => import(`./${commandFile.path}/${commandFile.name}`))
         )
-    ).map((imported) => imported.command);
+    )
+        .filter((imported) => imported.command)
+        .map((imported) => imported.command);
 }
 
 const commands = new Collection<string, Command>();
@@ -59,6 +62,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 (async () => {
     const commandArr = await loadCommands();
+    console.log(commandArr);
     commandArr.forEach((command) => commands.set(command.data.name, command));
 
     const rest = new REST().setToken(BOT_TOKEN);
