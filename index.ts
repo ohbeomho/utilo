@@ -62,8 +62,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 (async () => {
     const commandArr = await loadCommands();
-    console.log(commandArr);
-    commandArr.forEach((command) => commands.set(command.data.name, command));
+    console.log("Loaded commands:");
+    let commandString = "";
+    commandArr.forEach((command) => {
+        commands.set(command.data.name, command);
+        commandString += command.data.name + " ";
+    });
+    console.log(commandString.trim().replaceAll(" ", ", "));
 
     const rest = new REST().setToken(BOT_TOKEN);
 
