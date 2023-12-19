@@ -1,0 +1,69 @@
+{
+    "categories": [
+        {
+            "name": "Server",
+            "commands": [
+                {
+                    "name": "server-info",
+                    "description": "서버 정보를 표시합니다.",
+                    "developing": false
+                }
+            ]
+        },
+        {
+            "name": "Member",
+            "commands": [
+                {
+                    "name": "ban",
+                    "description": "사용자를 서버에서 밴 시킵니다.",
+                    "developing": true
+                },
+                {
+                    "name": "kick",
+                    "description": "사용자를 서버에서 추방시킵니다.",
+                    "developing": true
+                }
+            ]
+        },
+        {
+            "name": "Role",
+            "commands": [
+                {
+                    "name": "role create",
+                    "description": "역할을 생성합니다.",
+                    "developing": true
+                },
+                {
+                    "name": "role delete",
+                    "description": "역할을 삭제합니다.",
+                    "developing": true
+                },
+                {
+                    "name": "role add",
+                    "description": "사용자에게 역할을 추가합니다.",
+                    "developing": true
+                },
+                {
+                    "name": "role remove",
+                    "description": "사용자에게서 역할을 제거합니다.",
+                    "developing": true
+                }
+            ]
+        },
+        {
+            "name": "Other",
+            "commands": [
+                {
+                    "name": "help",
+                    "description": "이 목록을 보여줍니다.",
+                    "developing": false
+                },
+                {
+                    "name": "ping",
+                    "description": "Pong! 으로 답해줍니다.",
+                    "developing": false
+                }
+            ]
+        }
+    ]
+}
