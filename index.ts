@@ -49,7 +49,7 @@ const client = new Client({
 client.once(Events.ClientReady, () => console.log(`Logged in with ${client.user?.tag}`));
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
-    else if (NODE_ENV === "dev" && interaction.commandName.endsWith("-test")) return;
+    else if (NODE_ENV === "prod" && interaction.commandName.endsWith("-test")) return;
 
     const command = commands.get(interaction.commandName);
     if (!command) {
