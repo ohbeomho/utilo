@@ -13,7 +13,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npx tsc -p .",
+        "build": "bash ./build.sh",
         "dev": "nodemon index.ts"
     },
     "keywords": [
