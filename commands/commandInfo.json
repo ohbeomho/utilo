@@ -16,12 +16,12 @@
                 {
                     "name": "ban",
                     "description": "사용자를 서버에서 밴 시킵니다.",
-                    "developing": true
+                    "developing": false
                 },
                 {
                     "name": "kick",
                     "description": "사용자를 서버에서 추방시킵니다.",
-                    "developing": true
+                    "developing": false
                 }
             ]
         },
