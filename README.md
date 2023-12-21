@@ -1,3 +1,3 @@
 # utilo
 
-A simple discord bot. (currently developing)
+간단한 디스코드 봇
