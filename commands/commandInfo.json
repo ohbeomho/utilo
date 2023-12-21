@@ -62,6 +62,11 @@
                     "name": "ping",
                     "description": "Pong! 으로 답해줍니다.",
                     "developing": false
+                },
+                {
+                    "name": "info",
+                    "description": "봇 정보를 보여줍니다.",
+                    "developing": true
                 }
             ]
         }
