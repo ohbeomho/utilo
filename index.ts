@@ -1,41 +1,9 @@
-import "dotenv/config";
 import { Client, Collection, Events, GatewayIntentBits, REST, Routes } from "discord.js";
-import { Command } from "./commands";
-import commandInfo from "./commands/commandInfo.json";
+import { Command, CommandData } from "./commands";
+import { NODE_ENV, BOT_TOKEN, APP_ID } from "./config";
 import fs from "fs/promises";
 
-const requiredVars = ["BOT_TOKEN", "APP_ID", "NODE_ENV"];
-const env = requiredVars.map((name) => ({ name, value: process.env[name] }));
-const undef = env.filter((e) => e.value === undefined);
-
-if (undef.length) {
-    console.log(`${undef.map((e) => e.name).join(", ")}이 .env에 정의되어 있지 않습니다.`);
-    process.exit(1);
-}
-
-const [BOT_TOKEN, APP_ID, NODE_ENV] = env.map((e) => e.value!);
-
-async function loadCommands(): Promise<Command[]> {
-    return (
-        await Promise.all(
-            (await fs.readdir("./commands", { recursive: true, withFileTypes: true }))
-                .filter((dirent) => dirent.isFile())
-                .map((commandFile) => import(`./${commandFile.path}/${commandFile.name}`))
-        )
-    )
-        .filter((imported) => imported.command)
-        .map((imported) => {
-            const command: Command = imported.command;
-
-            if (NODE_ENV === "dev") {
-                command.data.setName(command.data.name + "-test");
-            }
-
-            return command;
-        });
-}
-
-const commands = new Collection<string, Command>();
+export let commandArr: Command[];
 
 const client = new Client({
     intents: [
@@ -45,6 +13,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ]
 });
+const commands = new Collection<string, Command>();
 
 client.once(Events.ClientReady, () => console.log(`${client.user?.tag}으로 로그인됨`));
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -75,25 +44,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-(async () => {
-    const commandArr = await loadCommands();
-    commandArr.forEach((command) => commands.set(command.data.name, command));
-
-    console.log(
-        commandInfo.categories
-            .map(
-                (category) =>
-                    category.name +
-                    " commands:\n" +
-                    category.commands
-                        .map((command) => command.name + (command.developing ? " (developing)" : ""))
-                        .join(", ")
-            )
-            .join("\n\n") + "\n"
-    );
+async function main() {
+    commandArr.forEach((command) => typeof command.data !== "string" && commands.set(command.data.name, command));
 
     const rest = new REST().setToken(BOT_TOKEN);
-    const body = commandArr.map((command) => command.data.toJSON());
+    const body = commandArr
+        .filter((command) => typeof command.data !== "string")
+        .map((command) => (<CommandData>command.data).toJSON());
 
     try {
         if (NODE_ENV === "prod") {
@@ -115,4 +72,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     client.login(BOT_TOKEN);
+}
+
+(async () => {
+    commandArr = (
+        await Promise.all(
+            (await fs.readdir(".\\commands", { recursive: true, withFileTypes: true }))
+                .filter((dirent) => dirent.isFile())
+                .map((commandFile) => import(`.\\${commandFile.path}\\${commandFile.name}`))
+        )
+    )
+        .filter((imported) => imported.command)
+        .map((imported) => {
+            const command: Command = imported.command;
+
+            if (NODE_ENV === "dev" && typeof command.data !== "string") {
+                command.data.setName(command.data.name + "-test");
+            }
+
+            return command;
+        });
+    main();
 })();

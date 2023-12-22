@@ -1,29 +1,24 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { Command } from "..";
-import commandInfo from "../commandInfo.json";
+import { commandArr } from "../..";
 
 export const command: Command = {
     data: new SlashCommandBuilder().setName("help").setDescription("명령어 목록 표시"),
     async execute(interaction) {
-        const embeds = [];
+        await interaction.reply({
+            embeds: [
+                new EmbedBuilder().setTitle("명령어 목록").setDescription(
+                    commandArr
+                        .map((command) => {
+                            if (typeof command.data === "string") {
+                                return `- **${command.data}** _(개발중)_`;
+                            }
 
-        for (let category of commandInfo.categories) {
-            embeds.push(
-                new EmbedBuilder()
-                    .setTitle(category.name + " commands")
-                    .setDescription(
-                        category.commands
-                            .map(
-                                (command) =>
-                                    `**${command.name}** - ${command.description}${
-                                        command.developing ? "_ - 개발중_" : ""
-                                    }`
-                            )
-                            .join("\n")
-                    )
-            );
-        }
-
-        await interaction.reply({ embeds });
+                            return `- **${command.data.name}**`;
+                        })
+                        .join("\n")
+                )
+            ]
+        });
     }
 };
