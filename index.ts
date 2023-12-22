@@ -2,6 +2,7 @@ import { Client, Collection, Events, GatewayIntentBits, REST, Routes } from "dis
 import { Command, CommandData } from "./commands";
 import { NODE_ENV, BOT_TOKEN, APP_ID } from "./config";
 import fs from "fs/promises";
+import path from "path";
 
 export let commandArr: Command[];
 
@@ -77,9 +78,9 @@ async function main() {
 (async () => {
     commandArr = (
         await Promise.all(
-            (await fs.readdir(".\\commands", { recursive: true, withFileTypes: true }))
+            (await fs.readdir(path.join(__dirname, "commands"), { recursive: true, withFileTypes: true }))
                 .filter((dirent) => dirent.isFile())
-                .map((commandFile) => import(`.\\${commandFile.path}\\${commandFile.name}`))
+                .map((commandFile) => import(path.join(commandFile.path, commandFile.name)))
         )
     )
         .filter((imported) => imported.command)
