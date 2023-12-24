@@ -4,8 +4,8 @@ import { Command } from "..";
 export const command: Command = {
     data: new SlashCommandBuilder().setName("server-info").setDescription("서버 정보"),
     async execute(interaction) {
-        const guild = interaction.guild;
-        if (!guild) return;
+        if (!interaction.inGuild()) return;
+        const guild = interaction.guild!;
 
         const guildOwner = await guild.fetchOwner();
         const embed = new EmbedBuilder()
