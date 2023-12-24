@@ -13,11 +13,11 @@ export const command: Command = {
             .setAuthor({ name: guildOwner.user.tag, iconURL: guildOwner.user.avatarURL() || undefined })
             .setDescription(guild.description)
             .addFields(
-                { name: "Created at", value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:F>` },
-                { name: "Member count", value: String(guild.memberCount) },
-                { name: "Role count", value: String((await guild.roles.fetch()).size - 1), inline: true },
+                { name: "서버 생성 일시", value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:F>` },
+                { name: "멤버 수", value: String(guild.memberCount) },
+                { name: "역할 개수", value: String((await guild.roles.fetch()).size - 1), inline: true },
                 {
-                    name: "Channel count",
+                    name: "채널 개수",
                     value: String(
                         (await guild.channels.fetch()).filter((channel) => !(channel instanceof CategoryChannel)).size
                     ),
