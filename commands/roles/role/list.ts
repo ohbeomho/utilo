@@ -8,7 +8,9 @@ const subcommand: Subcommand = {
         const roles = (await guild.roles.fetch()).filter((role) => role.id !== guild.roles.everyone.id);
         await interaction.reply({
             embeds: [
-                new EmbedBuilder().setTitle(guild.name).setDescription(roles.map((role) => `<@&${role.id}>`).join("\n"))
+                new EmbedBuilder()
+                    .setTitle(guild.name + " 역할 목록")
+                    .setDescription(roles.map((role) => `<@&${role.id}>`).join("\n"))
             ]
         });
     }
