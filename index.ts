@@ -1,7 +1,6 @@
 import { Client, Collection, Events, GatewayIntentBits, REST, Routes } from "discord.js";
-import { Command, CommandData } from "./commands";
+import { Command, loadCommands } from "./commands";
 import { NODE_ENV, BOT_TOKEN, APP_ID } from "./config";
-import fs from "fs/promises";
 import path from "path";
 
 export let commandArr: Command[];
@@ -45,13 +44,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-async function main() {
-    commandArr.forEach((command) => typeof command.data !== "string" && commands.set(command.data.name, command));
+(async () => {
+    commandArr = await loadCommands(path.join(__dirname, "commands"));
+    commandArr.forEach((command) => {
+        if (typeof command.data !== "string") {
+            if (NODE_ENV === "dev") command.data.setName(command.data.name + "-test");
+            commands.set(command.data.name, command);
+        }
+    });
 
     const rest = new REST().setToken(BOT_TOKEN);
     const body = commandArr
         .filter((command) => typeof command.data !== "string")
-        .map((command) => (<CommandData>command.data).toJSON());
+        .map((command) => command.data.toJSON());
 
     try {
         if (NODE_ENV === "prod") {
@@ -73,25 +78,4 @@ async function main() {
     }
 
     client.login(BOT_TOKEN);
-}
-
-(async () => {
-    commandArr = (
-        await Promise.all(
-            (await fs.readdir(path.join(__dirname, "commands"), { recursive: true, withFileTypes: true }))
-                .filter((dirent) => dirent.isFile())
-                .map((commandFile) => import(path.join(commandFile.path, commandFile.name)))
-        )
-    )
-        .filter((imported) => imported.command)
-        .map((imported) => {
-            const command: Command = imported.command;
-
-            if (NODE_ENV === "dev" && typeof command.data !== "string") {
-                command.data.setName(command.data.name + "-test");
-            }
-
-            return command;
-        });
-    main();
 })();
