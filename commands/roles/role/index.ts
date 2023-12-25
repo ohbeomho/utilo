@@ -6,8 +6,9 @@ import addUser from "./addUser";
 import removeUser from "./removeUser";
 import list from "./list";
 import color from "./color";
+import rename from "./rename";
 
-const subcommandArr: Subcommand[] = [create, del, addUser, removeUser, list, color];
+const subcommandArr: Subcommand[] = [create, del, addUser, removeUser, list, color, rename];
 const subcommands = new Map<string, Subcommand>();
 const data = new SlashCommandBuilder().setName("role").setDescription("역할 관련");
 for (let subcommand of subcommandArr) {
