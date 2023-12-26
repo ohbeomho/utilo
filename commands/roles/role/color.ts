@@ -27,8 +27,9 @@ const subcommand: Subcommand = {
         if (interaction.replied) return;
 
         const color = interaction.options.getString("color")!;
+        const oldColor = role.hexColor.substring(1);
         await role.setColor(("#" + color) as ColorResolvable);
-        await interaction.reply(`역할 색상이 변경되었습니다: <@&${role.id}>`);
+        await interaction.reply(`<@&${role.id}> 역할 색상이 변경되었습니다: **${oldColor} -> ${color}**`);
     }
 };
 
