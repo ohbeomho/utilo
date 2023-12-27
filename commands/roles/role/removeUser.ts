@@ -11,6 +11,8 @@ import {
     ComponentType
 } from "discord.js";
 import { Subcommand } from "../..";
+import { createCollector } from "../../../utils/interaction/select";
+import { awaitComponent } from "../../../utils/interaction/button";
 
 const subcommand: Subcommand = {
     data: new SlashCommandSubcommandBuilder()
@@ -46,43 +48,32 @@ const subcommand: Subcommand = {
         const components: any[] = [selectRow, buttonRow];
 
         const response = await interaction.reply({ components, ephemeral: true });
-        let roleAddUsers: string[] = [];
+        let roleRemoveUsers: string[] = [];
         let disabled = true;
         const filter = (i: Interaction) => i.user.id === interaction.user.id;
-
-        const collector = response.createMessageComponentCollector({
-            componentType: ComponentType.UserSelect,
-            filter,
-            time: 120_000
-        });
-        collector.on("collect", async (collected) => {
-            roleAddUsers = collected.values;
+        const stop = createCollector(response, filter, ComponentType.UserSelect, async (i) => {
+            roleRemoveUsers = i.values;
             if (disabled) {
                 removeButton.setDisabled(false);
                 disabled = false;
             }
 
-            await collected.update({ content: `${roleAddUsers.length}명 선택됨`, components });
+            await i.update({ content: `${roleRemoveUsers.length}명 선택됨`, components });
         });
+        awaitComponent(response, filter, async (i) => {
+            stop();
 
-        const confirmation = await response.awaitMessageComponent({
-            componentType: ComponentType.Button,
-            filter,
-            time: 120_000
+            if (i.customId === "remove") {
+                const users = await interaction.guild!.members.fetch({ user: roleRemoveUsers });
+                await Promise.all(users.map((user) => user.roles.remove(role)));
+                await i.update({
+                    content: `${roleRemoveUsers.length}명에게서 <@&${role.id}>역할을 제거했습니다.`,
+                    components: []
+                });
+            } else if (i.customId === "cancel") {
+                await i.update({ content: "역할 삭제가 취소되었습니다.", components: [] });
+            }
         });
-
-        if (confirmation.customId === "remove") {
-            const users = await interaction.guild!.members.fetch({ user: roleAddUsers });
-            await Promise.all(users.map((user) => user.roles.remove(role)));
-            await confirmation.update({
-                content: `${roleAddUsers.length}명에게서 <@&${role.id}>역할을 제거했습니다.`,
-                components: []
-            });
-        } else if (confirmation.customId === "cancel") {
-            await confirmation.update({ content: "역할 삭제가 취소되었습니다.", components: [] });
-        }
-
-        collector.stop();
     }
 };
 

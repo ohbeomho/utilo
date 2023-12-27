@@ -11,6 +11,8 @@ import {
     ComponentType
 } from "discord.js";
 import { Subcommand } from "../..";
+import { createCollector } from "../../../utils/interaction/select";
+import { awaitComponent } from "../../../utils/interaction/button";
 
 const subcommand: Subcommand = {
     data: new SlashCommandSubcommandBuilder()
@@ -50,40 +52,29 @@ const subcommand: Subcommand = {
         let roleAddUsers: string[] = [];
         let disabled = true;
         const filter = (i: Interaction) => i.user.id === interaction.user.id;
-
-        const collector = response.createMessageComponentCollector({
-            componentType: ComponentType.UserSelect,
-            filter,
-            time: 120_000
-        });
-        collector.on("collect", async (collected) => {
-            roleAddUsers = collected.values;
+        const stop = createCollector(response, filter, ComponentType.UserSelect, async (i) => {
+            roleAddUsers = i.values;
             if (disabled) {
                 addButton.setDisabled(false);
                 disabled = false;
             }
 
-            await collected.update({ content: `${roleAddUsers.length}명 선택됨`, components });
+            await i.update({ content: `${roleAddUsers.length}명 선택됨`, components });
         });
+        awaitComponent(response, filter, async (i) => {
+            stop();
 
-        const confirmation = await response.awaitMessageComponent({
-            componentType: ComponentType.Button,
-            filter,
-            time: 120_000
+            if (i.customId === "add") {
+                const users = await interaction.guild!.members.fetch({ user: roleAddUsers });
+                await Promise.all(users.map((user) => user.roles.add(role)));
+                await i.update({
+                    content: `${roleAddUsers.length}명에게 <@&${role.id}>역할을 추가했습니다.`,
+                    components: []
+                });
+            } else if (i.customId === "cancel") {
+                await i.update({ content: "역할 추가가 취소되었습니다.", components: [] });
+            }
         });
-
-        if (confirmation.customId === "add") {
-            const users = await interaction.guild!.members.fetch({ user: roleAddUsers });
-            await Promise.all(users.map((user) => user.roles.add(role)));
-            await confirmation.update({
-                content: `${roleAddUsers.length}명에게 <@&${role.id}>역할을 추가했습니다.`,
-                components: []
-            });
-        } else if (confirmation.customId === "cancel") {
-            await confirmation.update({ content: "역할 추가가 취소되었습니다.", components: [] });
-        }
-
-        collector.stop();
     }
 };
 
