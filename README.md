@@ -4,4 +4,4 @@
 
 # Version 1.0.2
 
--   Role command added
+- Role command added

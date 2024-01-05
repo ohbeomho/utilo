@@ -12,16 +12,16 @@ const subcommandArr: Subcommand[] = [create, del, addUser, removeUser, list, col
 const subcommands = new Map<string, Subcommand>();
 const data = new SlashCommandBuilder().setName("role").setDescription("역할 관련");
 for (let subcommand of subcommandArr) {
-    subcommands.set(subcommand.data.name, subcommand);
-    data.addSubcommand(subcommand.data);
+  subcommands.set(subcommand.data.name, subcommand);
+  data.addSubcommand(subcommand.data);
 }
 
 export const command: Command = {
-    data,
-    async execute(interaction) {
-        if (!interaction.inGuild()) return;
+  data,
+  async execute(interaction) {
+    if (!interaction.inGuild()) return;
 
-        const subcommand = interaction.options.getSubcommand(true);
-        await subcommands.get(subcommand)!.execute(interaction);
-    }
+    const subcommand = interaction.options.getSubcommand(true);
+    await subcommands.get(subcommand)!.execute(interaction);
+  }
 };
