@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-const requiredVars = ["BOT_TOKEN", "APP_ID", "NODE_ENV", "VER"];
+const requiredVars = ["BOT_TOKEN", "APP_ID", "NODE_ENV"];
 const env = requiredVars.map((name) => ({ name, value: process.env[name] }));
 const undef = env.filter((e) => e.value === undefined);
 
@@ -9,4 +9,4 @@ if (undef.length) {
   process.exit(1);
 }
 
-export const [BOT_TOKEN, APP_ID, NODE_ENV, VER] = env.map((e) => e.value!);
+export const [BOT_TOKEN, APP_ID, NODE_ENV, VER] = [...env.map((e) => e.value!), "1.0.2"];
