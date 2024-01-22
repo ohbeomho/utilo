@@ -1,4 +1,9 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import path from "path";
+
+config({
+  path: path.join(__dirname, ".env")
+});
 
 const requiredVars = ["BOT_TOKEN", "APP_ID", "NODE_ENV"];
 const env = requiredVars.map((name) => ({ name, value: process.env[name] }));
